@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1795549538790,
+  "timestamp": 1795557920892,
   "index": "/ng-mydictionnary/index.html",
   "assetGroups": [
     {
@@ -11,14 +11,14 @@
         "ignoreVary": true
       },
       "urls": [
-        "/ng-mydictionnary/chunk-Q6GN2XMJ.js",
-        "/ng-mydictionnary/chunk-QOCUPSTQ.js",
-        "/ng-mydictionnary/chunk-S4H52CP5.js",
-        "/ng-mydictionnary/chunk-UJW3NFS7.js",
-        "/ng-mydictionnary/chunk-WRBX5FOZ.js",
+        "/ng-mydictionnary/chunk-7ZS6PD6R.js",
+        "/ng-mydictionnary/chunk-B2UYPVOI.js",
+        "/ng-mydictionnary/chunk-DU42LHS2.js",
+        "/ng-mydictionnary/chunk-OIRN4545.js",
+        "/ng-mydictionnary/chunk-ZCJG6RHB.js",
         "/ng-mydictionnary/favicon.ico",
         "/ng-mydictionnary/index.html",
-        "/ng-mydictionnary/main-SK6YNE5Z.js",
+        "/ng-mydictionnary/main-T642B6JX.js",
         "/ng-mydictionnary/manifest.webmanifest",
         "/ng-mydictionnary/styles-6FMIMPCV.css"
       ],
@@ -61,11 +61,11 @@
   ],
   "dataGroups": [],
   "hashTable": {
-    "/ng-mydictionnary/chunk-Q6GN2XMJ.js": "f36c48c721be8fe3426443ca1ebc37bf9ccf3a09",
-    "/ng-mydictionnary/chunk-QOCUPSTQ.js": "f179b19dabd0a74bc143459624543dcea54913d5",
-    "/ng-mydictionnary/chunk-S4H52CP5.js": "9430c23941e82b2d43087fb4eeb46c596ce79ece",
-    "/ng-mydictionnary/chunk-UJW3NFS7.js": "db93421d709698d17d7364c9306080af8bfd7b48",
-    "/ng-mydictionnary/chunk-WRBX5FOZ.js": "f53389551d738e35073ebca39ed557f80b9b4ded",
+    "/ng-mydictionnary/chunk-7ZS6PD6R.js": "60a64ee1431a2655effe83d2a8a5a13283ba83a1",
+    "/ng-mydictionnary/chunk-B2UYPVOI.js": "d9deb75cbbe25667e79c85125e317a425c6fe97f",
+    "/ng-mydictionnary/chunk-DU42LHS2.js": "e42974a568a0f98cb87d5406864c92f9eac579ec",
+    "/ng-mydictionnary/chunk-OIRN4545.js": "e0d571b8feeb6732248a8c70bf8af2727eecb233",
+    "/ng-mydictionnary/chunk-ZCJG6RHB.js": "1a733fbaac33acf0ba050dc83e66330705d293af",
     "/ng-mydictionnary/favicon.ico": "9c39f434fe1261f68c5e3eefdf734630d99c5670",
     "/ng-mydictionnary/icons/icon-128x128.png": "a0fbc72bee42b6525b7768868d20b037d98fd7a4",
     "/ng-mydictionnary/icons/icon-144x144.png": "1cc8ba65f9ebb99131d1307c60a7f18105099f96",
@@ -75,9 +75,9 @@
     "/ng-mydictionnary/icons/icon-512x512.png": "f6c4fac5da5df9e50acbd34749f516d145de9400",
     "/ng-mydictionnary/icons/icon-72x72.png": "ca99bd72294de6af221b1e1eb2b1895e93642fce",
     "/ng-mydictionnary/icons/icon-96x96.png": "b0d2b2053d1ed642e04490d71460b062e28a4323",
-    "/ng-mydictionnary/index.html": "1c83904a750840bc17afe43f8e95043bb8991244",
+    "/ng-mydictionnary/index.html": "d1cc9a0d0e3c641c9599c9f3bc940e3654fded33",
     "/ng-mydictionnary/logo.png": "0c0ad5a93a6eba6d76ccc5537e4e219586d45ba9",
-    "/ng-mydictionnary/main-SK6YNE5Z.js": "43f39547f6b30ea32026b2c2165a29fed103010d",
+    "/ng-mydictionnary/main-T642B6JX.js": "e8077361fbfce68c2e0ad911512d577142c6154d",
     "/ng-mydictionnary/manifest.webmanifest": "6f0d8546d91493888a149c687394c597426299f2",
     "/ng-mydictionnary/media/inter-latin-400-normal-55WT6UWF.woff2": "68f645c6b6ff12e25c54b13d4ed119e631dcbb26",
     "/ng-mydictionnary/media/inter-latin-400-normal-FR5HOXA4.woff": "49bbcbc0ac6cb1385d93b7843ba01a7ead440c80",
