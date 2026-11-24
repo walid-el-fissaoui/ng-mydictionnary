@@ -44,4 +44,23 @@
       }
     </div>
   </section>
+
+  <section class="card" aria-labelledby="data-title">
+    <h2 id="data-title">Your data</h2>
+    <p class="note">
+      Save a JSON backup of your dictionary, or restore one from a backup file.
+      Importing replaces the data currently on this device.
+    </p>
+    <div class="data-actions">
+      <button type="button" class="btn btn-outline" (click)="exportData()">
+        <mat-icon>download</mat-icon>
+        Export data
+      </button>
+      <label class="btn btn-outline import-button">
+        <mat-icon>upload</mat-icon>
+        Import data
+        <input type="file" accept=".json,application/json" (change)="importData($event)" />
+      </label>
+    </div>
+  </section>
 </div>

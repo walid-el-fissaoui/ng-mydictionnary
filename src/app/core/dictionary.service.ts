@@ -3,7 +3,17 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { liveQuery } from 'dexie';
 import { from } from 'rxjs';
 import { db } from './db';
-import { AppSettings, Collection, DEFAULT_SETTINGS, Word, normalize } from './models';
+import { AppSettings, Collection, DEFAULT_SETTINGS, Word, WordLink, normalize } from './models';
+
+export interface DictionaryBackup {
+  format: 'mydictionnary-backup';
+  version: 1;
+  exportedAt: string;
+  words: Word[];
+  links: WordLink[];
+  collections: Collection[];
+  settings: AppSettings;
+}
 
 export interface WordInput {
   /** Present when editing an existing word. */
@@ -198,6 +208,86 @@ export class DictionaryService {
 
   async selectCollection(id: number | null): Promise<void> {
     await this.saveSettings({ selectedCollectionId: id });
+  }
+
+  async exportBackup(): Promise<DictionaryBackup> {
+    const [words, links, collections, settings] = await Promise.all([
+      db.words.toArray(),
+      db.links.toArray(),
+      db.collections.toArray(),
+      db.settings.get(1),
+    ]);
+    return {
+      format: 'mydictionnary-backup',
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      words,
+      links,
+      collections,
+      settings: settings ?? DEFAULT_SETTINGS,
+    };
+  }
+
+  async importBackup(value: unknown): Promise<void> {
+    const backup = this.validateBackup(value);
+    await db.transaction('rw', db.words, db.links, db.collections, db.settings, async () => {
+      await db.words.clear();
+      await db.links.clear();
+      await db.collections.clear();
+      await db.settings.clear();
+      await db.collections.bulkPut(backup.collections);
+      await db.words.bulkPut(backup.words);
+      await db.links.bulkPut(backup.links);
+      await db.settings.put(backup.settings);
+    });
+  }
+
+  private validateBackup(value: unknown): DictionaryBackup {
+    const fail = (): never => { throw new Error('This file is not a valid mydictionnary backup'); };
+    if (!value || typeof value !== 'object') return fail();
+    const b = value as Partial<DictionaryBackup>;
+    if (b.format !== 'mydictionnary-backup' || b.version !== 1 ||
+        !Array.isArray(b.words) || !Array.isArray(b.links) || !Array.isArray(b.collections) ||
+        !b.settings || typeof b.settings !== 'object') return fail();
+
+    const ids = (items: { id?: number }[]): Set<number> | null => {
+      const set = new Set<number>();
+      for (const item of items) {
+        if (!Number.isSafeInteger(item?.id) || item.id! < 1 || set.has(item.id!)) return null;
+        set.add(item.id!);
+      }
+      return set;
+    };
+    const wordIds = ids(b.words);
+    const collectionIds = ids(b.collections);
+    const linkIds = ids(b.links);
+    if (!wordIds || !collectionIds || !linkIds) return fail();
+    const norms = new Set<string>();
+    for (const w of b.words) {
+      if (!w || typeof w.lang !== 'string' || !w.lang.trim() || typeof w.text !== 'string' ||
+          typeof w.meaning !== 'string' || !Array.isArray(w.collectionIds) ||
+          !w.collectionIds.every((id) => Number.isSafeInteger(id) && collectionIds.has(id)) ||
+          !Number.isFinite(w.createdAt) || w.textNorm !== normalize(w.text)) return fail();
+      const key = `${w.lang}\0${w.textNorm}`;
+      if (norms.has(key)) return fail();
+      norms.add(key);
+    }
+    for (const c of b.collections) {
+      if (!c || typeof c.name !== 'string' || !c.name.trim() || !Number.isFinite(c.createdAt)) return fail();
+    }
+    const pairs = new Set<string>();
+    for (const l of b.links) {
+      if (!l || !wordIds.has(l.a) || !wordIds.has(l.b) || l.a >= l.b) return fail();
+      const key = `${l.a}:${l.b}`;
+      if (pairs.has(key)) return fail();
+      pairs.add(key);
+    }
+    const s = b.settings;
+    if (s.id !== 1 || typeof s.primaryLang !== 'string' || !s.primaryLang.trim() ||
+        typeof s.secondaryLang !== 'string' || !s.secondaryLang.trim() ||
+        s.primaryLang === s.secondaryLang ||
+        (s.selectedCollectionId !== null && !collectionIds.has(s.selectedCollectionId))) return fail();
+    return b as DictionaryBackup;
   }
 
   // ---- Collections ----------------------------------------------------------

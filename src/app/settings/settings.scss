@@ -38,6 +38,35 @@ h2 {
   border-radius: 14px;
 }
 
+.data-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.data-actions button,
+.import-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.import-button {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.import-button input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
 .seg-item {
   display: inline-flex;
   flex: 1;

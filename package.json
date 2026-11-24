@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "deploy": "ng build --base-href / && copy dist\\ng-mydictionnary\\browser\\index.html dist\\ng-mydictionnary\\browser\\404.html && npx angular-cli-ghpages --dir=dist/ng-mydictionnary/browser --cname=mydictionnary.yaomiy.com"
   },
   "private": true,
   "packageManager": "npm@10.9.9",
