@@ -6,6 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DictionaryService } from '../core/dictionary.service';
 import { Word, languageName } from '../core/models';
 import { ConfirmDialog, ConfirmDialogData } from '../shared/confirm-dialog';
+import { WordDetailsDialog, WordDetailsDialogData } from '../shared/word-details-dialog';
 import { WordDialog, WordDialogData, WordDialogResult } from '../shared/word-dialog';
 
 @Component({
@@ -40,6 +41,24 @@ export class Home {
 
   protected edit(word: Word): void {
     this.openWordDialog({ word });
+  }
+
+  protected showDetails(word: Word): void {
+    const data: WordDetailsDialogData = {
+      word,
+      translations: this.trs(word).map((translation) => translation.text),
+      collections: word.collectionIds.map((id) => this.dict.collectionName(id)),
+    };
+    this.dialog
+      .open<WordDetailsDialog, WordDetailsDialogData, string>(WordDetailsDialog, {
+        data,
+        width: '460px',
+        maxWidth: '94vw',
+      })
+      .afterClosed()
+      .subscribe((selectedWord) => {
+        if (selectedWord) this.openWordDialog({ initialText: selectedWord });
+      });
   }
 
   private openWordDialog(data: WordDialogData): void {

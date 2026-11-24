@@ -81,7 +81,13 @@
           @for (w of dict.visibleWords(); track w.id) {
             <li class="word">
               <div class="main">
-                <span class="text" dir="auto">{{ w.text }}</span>
+                <button
+                  type="button"
+                  class="text word-open"
+                  dir="auto"
+                  [attr.aria-label]="'Show details for ' + w.text"
+                  (click)="showDetails(w)"
+                >{{ w.text }}</button>
                 @if (trs(w).length > 0) {
                   <span class="tr" dir="auto">{{ trText(w) }}</span>
                 } @else {

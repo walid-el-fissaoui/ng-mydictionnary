@@ -9,6 +9,8 @@ import { NameDialog, NameDialogData } from './name-dialog';
 export interface WordDialogData {
   /** Present when editing. */
   word?: Word;
+  /** Prefills the word field when adding from the details dialog. */
+  initialText?: string;
 }
 
 export interface WordDialogResult {
@@ -30,7 +32,7 @@ export class WordDialog {
   protected readonly primaryName = computed(() => languageName(this.dict.primaryLang()));
   protected readonly secondaryName = computed(() => languageName(this.dict.secondaryLang()));
 
-  protected readonly text = signal(this.data.word?.text ?? '');
+  protected readonly text = signal(this.data.word?.text ?? this.data.initialText ?? '');
   protected readonly meaning = signal(this.data.word?.meaning ?? '');
   protected readonly translations = signal<string[]>(
     this.data.word
@@ -46,6 +48,49 @@ export class WordDialog {
   );
   protected readonly error = signal('');
   protected readonly busy = signal(false);
+  protected readonly lookingUpMeaning = signal(false);
+
+  /** Looks up English definitions without requiring an API key or application backend. */
+  protected async lookupMeaning(): Promise<void> {
+    const word = this.text().trim();
+    if (!word || this.lookingUpMeaning()) return;
+
+    this.error.set('');
+    this.lookingUpMeaning.set(true);
+    try {
+      const response = await fetch(
+        `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`,
+      );
+      if (!response.ok) throw new Error('No definition found for this word.');
+
+      const entries = (await response.json()) as Array<{
+        meanings?: Array<{
+          partOfSpeech?: string;
+          definitions?: Array<{ definition?: string }>;
+        }>;
+      }>;
+      const definitions = entries.flatMap((entry) =>
+        (entry.meanings ?? []).flatMap((meaning) =>
+          (meaning.definitions ?? [])
+            .filter((definition) => definition.definition)
+            .slice(0, 2)
+            .map((definition) =>
+              `${meaning.partOfSpeech ? `${meaning.partOfSpeech}: ` : ''}${definition.definition}`,
+            ),
+        ),
+      );
+      if (definitions.length === 0) throw new Error('No definition found for this word.');
+      this.meaning.set(definitions.slice(0, 4).join('\n'));
+    } catch (e) {
+      this.error.set(
+        e instanceof Error && e.message !== 'Failed to fetch'
+          ? e.message
+          : 'Could not reach the dictionary. Check your connection and try again.',
+      );
+    } finally {
+      this.lookingUpMeaning.set(false);
+    }
+  }
 
   /** Enter or a comma (Latin or Arabic) confirms a translation; Backspace on empty removes the last. */
   protected onTranslationKey(event: KeyboardEvent, input: HTMLInputElement): void {

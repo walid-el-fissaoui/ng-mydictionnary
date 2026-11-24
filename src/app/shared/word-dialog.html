@@ -18,14 +18,26 @@
 
     <div class="field">
       <label class="field-label" for="w-meaning">Meaning (optional)</label>
-      <textarea
-        id="w-meaning"
-        class="input"
-        name="meaning"
-        dir="auto"
-        rows="3"
-        [(ngModel)]="meaning"
-      ></textarea>
+      <div class="meaning-field">
+        <textarea
+          id="w-meaning"
+          class="input"
+          name="meaning"
+          dir="auto"
+          rows="3"
+          [(ngModel)]="meaning"
+        ></textarea>
+        <button
+          type="button"
+          class="meaning-lookup"
+          [disabled]="!text().trim() || lookingUpMeaning()"
+          [attr.aria-label]="lookingUpMeaning() ? 'Looking up meaning' : 'Look up meaning for ' + text()"
+          [title]="lookingUpMeaning() ? 'Looking up meaning…' : 'Look up meaning'"
+          (click)="lookupMeaning()"
+        >
+          <mat-icon>{{ lookingUpMeaning() ? 'hourglass_top' : 'auto_awesome' }}</mat-icon>
+        </button>
+      </div>
     </div>
 
     <div class="field">

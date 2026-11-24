@@ -177,6 +177,19 @@ h1 {
   overflow-wrap: anywhere;
 }
 
+.word-open {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--app-tx);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+
+  &:hover { color: var(--app-acc); }
+  &:focus-visible { outline: 2px solid var(--app-acc); outline-offset: 3px; border-radius: 2px; }
+}
+
 .tr {
   color: var(--app-acc);
   font-size: 15px;
