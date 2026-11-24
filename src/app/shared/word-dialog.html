@@ -1,0 +1,87 @@
+<form (ngSubmit)="save(tIn)">
+  <h2 mat-dialog-title>{{ data.word ? 'Edit word' : 'Add word' }}</h2>
+
+  <mat-dialog-content>
+    <div class="field">
+      <label class="field-label" for="w-text">Word ({{ primaryName() }})</label>
+      <input
+        id="w-text"
+        class="input"
+        name="text"
+        dir="auto"
+        autocomplete="off"
+        cdkFocusInitial
+        [(ngModel)]="text"
+        (ngModelChange)="error.set('')"
+      />
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="w-meaning">Meaning (optional)</label>
+      <textarea
+        id="w-meaning"
+        class="input"
+        name="meaning"
+        dir="auto"
+        rows="3"
+        [(ngModel)]="meaning"
+      ></textarea>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="w-tr">Translations ({{ secondaryName() }})</label>
+      <div class="input tr-box">
+        @for (t of translations(); track t) {
+          <span class="chip" dir="auto">
+            {{ t }}
+            <button
+              type="button"
+              class="chip-x"
+              [attr.aria-label]="'Remove ' + t"
+              (click)="removeTranslation(t)"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </span>
+        }
+        <input
+          #tIn
+          id="w-tr"
+          class="tr-input"
+          name="translation"
+          dir="auto"
+          autocomplete="off"
+          placeholder="Type a word and press Enter"
+          (keydown)="onTranslationKey($event, tIn)"
+          (blur)="commit(tIn)"
+        />
+      </div>
+    </div>
+
+    <div class="field">
+      <span class="field-label" id="w-coll">Collections</span>
+      <div class="coll" role="group" aria-labelledby="w-coll">
+        @for (c of dict.collections(); track c.id) {
+          <button
+            type="button"
+            class="chip"
+            [attr.aria-pressed]="collectionIds().includes(c.id!)"
+            (click)="toggleCollection(c.id!)"
+          >
+            {{ c.name }}
+          </button>
+        }
+        <button type="button" class="chip chip-new" (click)="newCollection()">+ New</button>
+      </div>
+    </div>
+
+    @if (error()) {
+      <p class="form-error" role="alert">{{ error() }}</p>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button type="button" class="btn" mat-dialog-close>Cancel</button>
+    <button type="submit" class="btn btn-primary" [disabled]="busy()">Save</button>
+  </mat-dialog-actions>
+</form>

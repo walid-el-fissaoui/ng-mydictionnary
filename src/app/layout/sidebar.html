@@ -1,0 +1,136 @@
+<div class="head">
+  <button
+    type="button"
+    class="icon-btn"
+    [attr.aria-label]="layout.mobile() ? 'Close menu' : layout.compact() ? 'Expand sidebar' : 'Collapse sidebar'"
+    (click)="layout.toggle()"
+  >
+    <mat-icon>{{ layout.mobile() ? 'close' : 'menu' }}</mat-icon>
+  </button>
+  @if (!layout.compact()) {
+    <span class="brand">mydictionnary</span>
+  }
+</div>
+
+<nav class="nav" aria-label="Main">
+  <a
+    class="item"
+    routerLink="/"
+    routerLinkActive="active"
+    [routerLinkActiveOptions]="{ exact: true }"
+    title="Home"
+    (click)="layout.closeDrawer()"
+  >
+    <mat-icon>home</mat-icon>
+    @if (!layout.compact()) {
+      <span class="label">Home</span>
+    }
+  </a>
+  <a
+    class="item"
+    routerLink="/settings"
+    routerLinkActive="active"
+    title="Settings"
+    (click)="layout.closeDrawer()"
+  >
+    <mat-icon>settings</mat-icon>
+    @if (!layout.compact()) {
+      <span class="label">Settings</span>
+    }
+  </a>
+</nav>
+
+<div class="section">
+  @if (layout.compact()) {
+    <button
+      class="item"
+      type="button"
+      title="Collections"
+      aria-label="Show collections"
+      (click)="openCollections()"
+    >
+      <mat-icon>folder_open</mat-icon>
+    </button>
+  } @else {
+    <div class="section-head">
+      <span class="section-title">Collections</span>
+      <button
+        type="button"
+        class="icon-btn"
+        aria-label="New collection"
+        title="New collection"
+        (click)="createCollection()"
+      >
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+
+    <div class="search">
+      <mat-icon aria-hidden="true">search</mat-icon>
+      <input
+        type="search"
+        dir="auto"
+        placeholder="Search collections"
+        aria-label="Search collections"
+        [ngModel]="filter()"
+        (ngModelChange)="filter.set($event)"
+      />
+    </div>
+
+    <ul class="list">
+      <li class="all">
+        <button
+          class="item"
+          type="button"
+          [class.active]="dict.activeCollectionId() === null"
+          [attr.aria-current]="dict.activeCollectionId() === null ? 'true' : null"
+          (click)="select(null)"
+        >
+          <mat-icon>library_books</mat-icon>
+          <span class="label">All words</span>
+          <span class="count">{{ dict.allCount() }}</span>
+        </button>
+      </li>
+
+      @for (c of filtered(); track c.id) {
+        <li class="row">
+          <button
+            class="item"
+            type="button"
+            [class.active]="dict.activeCollectionId() === c.id"
+            [attr.aria-current]="dict.activeCollectionId() === c.id ? 'true' : null"
+            (click)="select(c.id!)"
+          >
+            <mat-icon>folder</mat-icon>
+            <span class="label" dir="auto">{{ c.name }}</span>
+            <span class="count">{{ dict.countByCollection().get(c.id!) ?? 0 }}</span>
+          </button>
+          <button
+            type="button"
+            class="icon-btn more"
+            [matMenuTriggerFor]="menu"
+            [attr.aria-label]="'Options for ' + c.name"
+          >
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item type="button" (click)="rename(c)">
+              <mat-icon>edit</mat-icon>
+              <span>Rename</span>
+            </button>
+            <button mat-menu-item type="button" (click)="remove(c)">
+              <mat-icon>delete</mat-icon>
+              <span>Delete</span>
+            </button>
+          </mat-menu>
+        </li>
+      } @empty {
+        @if (filter()) {
+          <li class="hint">No collections match.</li>
+        } @else {
+          <li class="hint">Create a collection for a topic, a book, or work.</li>
+        }
+      }
+    </ul>
+  }
+</div>

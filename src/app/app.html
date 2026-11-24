@@ -1,0 +1,47 @@
+<div class="shell" [class.mobile]="layout.mobile()">
+  @if (layout.mobile() && layout.drawerOpen()) {
+    <div class="backdrop" (click)="layout.closeDrawer()" aria-hidden="true"></div>
+  }
+
+  <app-sidebar
+    class="sidebar"
+    [class.compact]="layout.compact()"
+    [class.open]="layout.drawerOpen()"
+  />
+
+  <div class="content">
+    <header class="topbar">
+      @if (layout.mobile()) {
+        <button type="button" class="icon-btn" aria-label="Open menu" (click)="layout.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <span class="title">mydictionnary</span>
+      }
+      <span class="spacer"></span>
+      <button
+        type="button"
+        class="btn btn-outline btn-sm swap"
+        aria-label="Swap languages"
+        title="Swap languages"
+        (click)="swap()"
+      >
+        {{ primary() }}
+        <mat-icon>swap_horiz</mat-icon>
+        {{ secondary() }}
+      </button>
+      <button
+        type="button"
+        class="icon-btn"
+        [attr.aria-label]="theme.effective() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
+        [title]="theme.effective() === 'dark' ? 'Light theme' : 'Dark theme'"
+        (click)="theme.toggle()"
+      >
+        <mat-icon>{{ theme.effective() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+    </header>
+
+    <main class="main">
+      <router-outlet />
+    </main>
+  </div>
+</div>

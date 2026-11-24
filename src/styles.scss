@@ -1,0 +1,313 @@
+@use '@angular/material' as mat;
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: (
+        plain-family: ('Inter', 'Noto Sans Arabic', system-ui, sans-serif),
+        brand-family: ('Inter', 'Noto Sans Arabic', system-ui, sans-serif),
+        bold-weight: 600,
+        medium-weight: 500,
+        regular-weight: 400,
+      ),
+      density: 0,
+    )
+  );
+}
+
+// ---- App palette (slate + blue) -------------------------------------------
+
+:root,
+:root[data-theme='light'] {
+  --app-bg: #f8fafc;
+  --app-side: #ffffff;
+  --app-card: #f1f5f9;
+  --app-line: #e2e8f0;
+  --app-act: #e2e8f0;
+  --app-acc: #1976d2;
+  --app-on-acc: #ffffff;
+  --app-accbg: #e3f0fd;
+  --app-ring: rgb(25 118 210 / 0.22);
+  --app-tx: #0f172a;
+  --app-mu: #64748b;
+  --app-input: #ffffff;
+  --app-ib: #cbd5e1;
+  --app-chip: #f1f5f9;
+  --app-hover: rgb(15 23 42 / 0.05);
+  --app-danger: #dc2626;
+  --app-card-border: 1px dashed var(--app-line);
+}
+
+:root[data-theme='dark'] {
+  --app-bg: #0b0f19;
+  --app-side: #0f172a;
+  --app-card: #1e293b;
+  --app-line: #1e293b;
+  --app-act: #334155;
+  --app-acc: #60a5fa;
+  --app-on-acc: #0b0f19;
+  --app-accbg: #1e3a5f;
+  --app-ring: rgb(96 165 250 / 0.3);
+  --app-tx: #f8fafc;
+  --app-mu: #94a3b8;
+  --app-input: #1e293b;
+  --app-ib: #334155;
+  --app-chip: #334155;
+  --app-hover: rgb(248 250 252 / 0.07);
+  --app-danger: #f87171;
+  --app-card-border: 1px solid transparent;
+}
+
+// Point Angular Material at the same palette so menus, dialogs and snackbars match.
+:root,
+:root[data-theme] {
+  --mat-sys-surface: var(--app-bg);
+  --mat-sys-background: var(--app-bg);
+  --mat-sys-on-surface: var(--app-tx);
+  --mat-sys-on-background: var(--app-tx);
+  --mat-sys-on-surface-variant: var(--app-mu);
+  --mat-sys-surface-container-lowest: var(--app-side);
+  --mat-sys-surface-container-low: var(--app-side);
+  --mat-sys-surface-container: var(--app-side);
+  --mat-sys-surface-container-high: var(--app-side);
+  --mat-sys-surface-container-highest: var(--app-card);
+  --mat-sys-primary: var(--app-acc);
+  --mat-sys-on-primary: var(--app-on-acc);
+  --mat-sys-secondary-container: var(--app-act);
+  --mat-sys-on-secondary-container: var(--app-acc);
+  --mat-sys-outline: var(--app-ib);
+  --mat-sys-outline-variant: var(--app-line);
+  --mat-sys-error: var(--app-danger);
+  --mat-sys-inverse-surface: var(--app-tx);
+  --mat-sys-inverse-on-surface: var(--app-bg);
+  --mat-sys-inverse-primary: var(--app-acc);
+
+  --mat-dialog-container-shape: 20px;
+  --mat-dialog-container-color: var(--app-side);
+  --mat-dialog-subhead-color: var(--app-tx);
+  --mat-dialog-supporting-text-color: var(--app-tx);
+  --mat-dialog-subhead-size: 17px;
+  --mat-dialog-subhead-weight: 600;
+  --mat-menu-container-shape: 14px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--app-bg);
+  color: var(--app-tx);
+  font-family: 'Inter', 'Noto Sans Arabic', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--app-acc);
+  outline-offset: 2px;
+}
+
+// ---- Shared UI pieces -------------------------------------------------------
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: var(--app-act);
+  color: var(--app-tx);
+  font: inherit;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: box-shadow 120ms ease;
+
+  &:hover {
+    box-shadow: inset 0 0 0 100px var(--app-hover);
+  }
+  &:active {
+    transform: scale(0.98);
+  }
+  .mat-icon,
+  .material-icons-outlined {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+.btn-primary {
+  background: var(--app-acc);
+  color: var(--app-on-acc);
+}
+.btn-outline {
+  background: transparent;
+  border-color: var(--app-ib);
+}
+.btn-danger {
+  background: var(--app-danger);
+  color: #fff;
+}
+.btn-sm {
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--app-mu);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--app-hover);
+    color: var(--app-tx);
+  }
+  .mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.field {
+  display: block;
+  margin: 0 0 16px;
+}
+.field-label {
+  display: block;
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--app-mu);
+}
+.field-hint {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--app-mu);
+}
+
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--app-ib);
+  border-radius: 12px;
+  background: var(--app-input);
+  color: var(--app-tx);
+  font: inherit;
+  outline: 0;
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+
+  &::placeholder {
+    color: var(--app-mu);
+    opacity: 0.8;
+  }
+  &:focus,
+  &:focus-within {
+    border-color: var(--app-acc);
+    box-shadow: 0 0 0 3px var(--app-ring);
+  }
+}
+textarea.input {
+  min-height: 88px;
+  line-height: 1.5;
+  resize: vertical;
+}
+select.input {
+  appearance: none;
+  padding-inline-end: 36px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--app-chip);
+  color: var(--app-tx);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.4;
+
+  .mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+button.chip {
+  cursor: pointer;
+  &:hover {
+    box-shadow: inset 0 0 0 100px var(--app-hover);
+  }
+  &[aria-pressed='true'] {
+    background: var(--app-accbg);
+    color: var(--app-acc);
+    font-weight: 500;
+  }
+}
+.chip-new {
+  background: transparent;
+  border: 1px dashed var(--app-ib);
+  color: var(--app-acc);
+  font-weight: 500;
+}
+
+.form-error {
+  margin: 0 0 12px;
+  color: var(--app-danger);
+  font-size: 13px;
+}
+
+// Dialog surface and spacing
+.mat-mdc-dialog-surface {
+  border: 1px solid var(--app-line);
+}
+.mat-mdc-dialog-actions {
+  gap: 8px;
+  padding: 8px 24px 20px !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}

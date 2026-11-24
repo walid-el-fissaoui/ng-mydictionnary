@@ -1,0 +1,47 @@
+<div class="page">
+  <h1>Settings</h1>
+
+  <section class="card" aria-labelledby="lang-title">
+    <h2 id="lang-title">Languages</h2>
+    <p class="note">
+      You manage words in the main language, and see their translations in the second one.
+      Swapping reverses the flow without changing your data.
+    </p>
+
+    <app-language-picker
+      label="Main language"
+      [value]="dict.primaryLang()"
+      (valueChange)="setPrimary($event)"
+    />
+    <app-language-picker
+      label="Translate to"
+      [value]="dict.secondaryLang()"
+      (valueChange)="setSecondary($event)"
+    />
+
+    <button type="button" class="btn btn-outline" (click)="swap()">
+      <mat-icon>swap_horiz</mat-icon>
+      Swap languages
+    </button>
+  </section>
+
+  <section class="card" aria-labelledby="theme-title">
+    <h2 id="theme-title">Appearance</h2>
+    <p class="note">System follows your device setting.</p>
+    <div class="seg" role="radiogroup" aria-labelledby="theme-title">
+      @for (t of themes; track t.mode) {
+        <button
+          type="button"
+          role="radio"
+          class="seg-item"
+          [attr.aria-checked]="theme.mode() === t.mode"
+          [class.on]="theme.mode() === t.mode"
+          (click)="theme.set(t.mode)"
+        >
+          <mat-icon>{{ t.icon }}</mat-icon>
+          {{ t.label }}
+        </button>
+      }
+    </div>
+  </section>
+</div>

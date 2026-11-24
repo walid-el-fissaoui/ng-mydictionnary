@@ -1,0 +1,50 @@
+:host {
+  display: block;
+  min-width: min(480px, 80vw);
+}
+
+.tr-box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 6px 8px;
+}
+
+.tr-input {
+  flex: 1;
+  min-width: 140px;
+  padding: 4px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--app-tx);
+  font: inherit;
+
+  &::placeholder {
+    color: var(--app-mu);
+    opacity: 0.8;
+  }
+}
+
+.chip-x {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--app-mu);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--app-tx);
+  }
+}
+
+.coll {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
