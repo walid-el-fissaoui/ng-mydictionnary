@@ -103,7 +103,7 @@
             (click)="select(c.id!)"
           >
             <mat-icon>folder</mat-icon>
-            <span class="label" dir="auto">{{ c.name }}</span>
+            <span class="label" dir="auto" [title]="c.name">{{ c.name }}</span>
             <span class="count">{{ dict.countByCollection().get(c.id!) ?? 0 }}</span>
           </button>
           <button

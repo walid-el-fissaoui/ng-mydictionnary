@@ -157,7 +157,13 @@
   align-items: center;
   gap: 2px;
 
+  .item {
+    flex: 1;
+    min-width: 0;
+  }
+
   .more {
+    flex: none;
     opacity: 0;
   }
   &:hover .more,
