@@ -17,27 +17,44 @@
     </div>
 
     <div class="field">
-      <label class="field-label" for="w-meaning">Meaning (optional)</label>
-      <div class="meaning-field">
-        <textarea
-          id="w-meaning"
-          class="input"
-          name="meaning"
-          dir="auto"
-          rows="3"
-          [(ngModel)]="meaning"
-        ></textarea>
+      <div class="meaning-head">
+        <label class="field-label" for="w-meaning">Meaning (optional)</label>
         <button
           type="button"
           class="meaning-lookup"
           [disabled]="!text().trim() || lookingUpMeaning()"
-          [attr.aria-label]="lookingUpMeaning() ? 'Looking up meaning' : 'Look up meaning for ' + text()"
-          [title]="lookingUpMeaning() ? 'Looking up meaning…' : 'Look up meaning'"
+          [attr.aria-label]="lookingUpMeaning() ? 'Looking up meaning' : 'Auto-fill meaning for ' + text()"
           (click)="lookupMeaning()"
         >
           <mat-icon>{{ lookingUpMeaning() ? 'hourglass_top' : 'auto_awesome' }}</mat-icon>
+          {{ lookingUpMeaning() ? 'Looking up…' : definition() ? 'Refresh' : 'Auto-fill' }}
         </button>
       </div>
+
+      @if (definition(); as def) {
+        <div class="definition-preview">
+          <button
+            type="button"
+            class="definition-remove"
+            aria-label="Remove dictionary definition"
+            title="Remove dictionary definition"
+            (click)="definition.set(null)"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+          <app-definition-view [definition]="def" [showSource]="false" />
+        </div>
+      }
+
+      <textarea
+        id="w-meaning"
+        class="input"
+        name="meaning"
+        dir="auto"
+        rows="2"
+        [placeholder]="definition() ? 'Your own notes' : 'Type a meaning, or use Auto-fill'"
+        [(ngModel)]="meaning"
+      ></textarea>
     </div>
 
     <div class="field">

@@ -3,7 +3,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { liveQuery } from 'dexie';
 import { from } from 'rxjs';
 import { db } from './db';
-import { AppSettings, Collection, DEFAULT_SETTINGS, Word, WordLink, normalize } from './models';
+import { definitionText } from './dictionary-api';
+import { AppSettings, Collection, DEFAULT_SETTINGS, Word, WordDefinition, WordLink, normalize } from './models';
 
 export interface DictionaryBackup {
   format: 'mydictionnary-backup';
@@ -20,6 +21,8 @@ export interface WordInput {
   id?: number;
   text: string;
   meaning: string;
+  /** Structured definition from the dictionary API; null or omitted means none. */
+  definition?: WordDefinition | null;
   /** Translations in the current secondary language. */
   translations: string[];
   collectionIds: number[];
@@ -29,6 +32,12 @@ export interface SaveResult {
   id: number;
   /** True when the word already existed and the input was merged into it. */
   merged: boolean;
+}
+
+/** Sets or removes the structured definition (no undefined key is stored). */
+function withDefinition(word: Word, definition: WordDefinition | null | undefined): Word {
+  const { definition: _old, ...rest } = word;
+  return definition ? { ...rest, definition } : rest;
 }
 
 function unique<T>(items: T[]): T[] {
@@ -140,6 +149,7 @@ export class DictionaryService {
       (w) =>
         w.textNorm.includes(q) ||
         normalize(w.meaning).includes(q) ||
+        normalize(definitionText(w.definition)).includes(q) ||
         (tr.get(w.id!) ?? []).some((t) => t.textNorm.includes(q)),
     );
   });
@@ -266,6 +276,7 @@ export class DictionaryService {
     for (const w of b.words) {
       if (!w || typeof w.lang !== 'string' || !w.lang.trim() || typeof w.text !== 'string' ||
           typeof w.meaning !== 'string' || !Array.isArray(w.collectionIds) ||
+          (w.definition !== undefined && !this.validDefinition(w.definition)) ||
           !w.collectionIds.every((id) => Number.isSafeInteger(id) && collectionIds.has(id)) ||
           !Number.isFinite(w.createdAt) || w.textNorm !== normalize(w.text)) return fail();
       const key = `${w.lang}\0${w.textNorm}`;
@@ -288,6 +299,32 @@ export class DictionaryService {
         s.primaryLang === s.secondaryLang ||
         (s.selectedCollectionId !== null && !collectionIds.has(s.selectedCollectionId))) return fail();
     return b as DictionaryBackup;
+  }
+
+  private validDefinition(d: unknown): boolean {
+    const strings = (v: unknown) => Array.isArray(v) && v.every((s) => typeof s === 'string');
+    if (!d || typeof d !== 'object') return false;
+    const def = d as WordDefinition;
+    return (
+      strings(def.sourceUrls) &&
+      Array.isArray(def.entries) &&
+      def.entries.every(
+        (e) =>
+          e && (e.origin === undefined || typeof e.origin === 'string') &&
+          Array.isArray(e.meanings) &&
+          e.meanings.every(
+            (m) =>
+              m && typeof m.partOfSpeech === 'string' && strings(m.synonyms) && strings(m.antonyms) &&
+              Array.isArray(m.definitions) &&
+              m.definitions.every(
+                (s) =>
+                  s && typeof s.definition === 'string' &&
+                  (s.example === undefined || typeof s.example === 'string') &&
+                  strings(s.synonyms) && strings(s.antonyms),
+              ),
+          ),
+      )
+    );
   }
 
   // ---- Collections ----------------------------------------------------------
@@ -371,25 +408,34 @@ export class DictionaryService {
         if (existing && existing.id !== current.id) {
           throw new Error(`"${existing.text}" is already in your dictionary`);
         }
-        word = { ...current, text, textNorm: norm, meaning, collectionIds: unique(input.collectionIds) };
+        word = withDefinition(
+          { ...current, text, textNorm: norm, meaning, collectionIds: unique(input.collectionIds) },
+          input.definition === undefined ? current.definition : input.definition,
+        );
         await db.words.put(word);
       } else if (existing) {
         merged = true;
-        word = {
-          ...existing,
-          meaning: existing.meaning || meaning,
-          collectionIds: unique([...existing.collectionIds, ...input.collectionIds]),
-        };
+        word = withDefinition(
+          {
+            ...existing,
+            meaning: existing.meaning || meaning,
+            collectionIds: unique([...existing.collectionIds, ...input.collectionIds]),
+          },
+          existing.definition ?? input.definition,
+        );
         await db.words.put(word);
       } else {
-        word = {
-          lang,
-          text,
-          textNorm: norm,
-          meaning,
-          collectionIds: unique(input.collectionIds),
-          createdAt: now,
-        };
+        word = withDefinition(
+          {
+            lang,
+            text,
+            textNorm: norm,
+            meaning,
+            collectionIds: unique(input.collectionIds),
+            createdAt: now,
+          },
+          input.definition,
+        );
         word.id = await db.words.add(word);
       }
       const wordId = word.id!;

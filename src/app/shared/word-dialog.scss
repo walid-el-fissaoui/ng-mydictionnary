@@ -3,34 +3,73 @@
   min-width: min(480px, 80vw);
 }
 
-.meaning-field {
-  position: relative;
+.meaning-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
 
-  textarea {
-    padding-bottom: 42px;
+  .field-label {
+    margin-bottom: 0;
+  }
+}
+
+.definition-preview {
+  position: relative;
+  max-height: 260px;
+  margin-bottom: 8px;
+  padding: 12px 40px 12px 14px;
+  overflow-y: auto;
+  border: 1px solid var(--app-ib);
+  border-radius: 10px;
+  background: var(--app-card);
+  font-size: 14px;
+}
+
+.definition-remove {
+  position: absolute;
+  top: 6px;
+  inset-inline-end: 6px;
+  display: inline-flex;
+  padding: 4px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--app-mu);
+  cursor: pointer;
+
+  .mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+
+  &:hover {
+    background: var(--app-hover);
+    color: var(--app-tx);
   }
 }
 
 .meaning-lookup {
-  position: absolute;
-  inset-inline-end: 8px;
-  bottom: 8px;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
+  gap: 4px;
+  height: 28px;
+  padding: 0 10px;
   border: 1px solid var(--app-ib);
-  border-radius: 10px;
+  border-radius: 999px;
   background: var(--app-input);
   color: var(--app-acc);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
 
   .mat-icon {
-    width: 20px;
-    height: 20px;
-    font-size: 20px;
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
   }
 
   &:hover:not(:disabled) {

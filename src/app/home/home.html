@@ -35,8 +35,8 @@
         <section class="remember" aria-label="Word to remember">
           <p class="eyebrow">Word to remember</p>
           <p class="big" dir="auto">{{ s.text }}</p>
-          @if (s.meaning) {
-            <p class="meaning" dir="auto">{{ s.meaning }}</p>
+          @if (summary(s); as m) {
+            <p class="meaning" dir="auto">{{ m }}</p>
           }
           @if (trs(s).length > 0) {
             <ul class="chips">
@@ -93,8 +93,8 @@
                 } @else {
                   <span class="none">no translation</span>
                 }
-                @if (w.meaning) {
-                  <span class="mean" dir="auto">{{ w.meaning }}</span>
+                @if (summary(w); as m) {
+                  <span class="mean" dir="auto">{{ m }}</span>
                 }
                 @if (w.collectionIds.length > 0) {
                   <span class="tags">

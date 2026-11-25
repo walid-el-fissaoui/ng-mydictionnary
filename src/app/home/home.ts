@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { firstDefinition } from '../core/dictionary-api';
 import { DictionaryService } from '../core/dictionary.service';
 import { Word, languageName } from '../core/models';
 import { ConfirmDialog, ConfirmDialogData } from '../shared/confirm-dialog';
@@ -35,6 +36,11 @@ export class Home {
       .join(' · ');
   }
 
+  /** Typed meaning, or the first dictionary definition as a fallback. */
+  protected summary(word: Word): string {
+    return word.meaning || firstDefinition(word.definition);
+  }
+
   protected add(): void {
     this.openWordDialog({});
   }
@@ -52,7 +58,7 @@ export class Home {
     this.dialog
       .open<WordDetailsDialog, WordDetailsDialogData, string>(WordDetailsDialog, {
         data,
-        width: '460px',
+        width: '540px',
         maxWidth: '94vw',
       })
       .afterClosed()

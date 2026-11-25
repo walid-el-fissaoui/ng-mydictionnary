@@ -72,6 +72,36 @@ describe('DictionaryService', () => {
     expect(dict.translations().get(w.id!)!.length).toBe(2);
   });
 
+  it('stores, keeps, merges and removes the structured definition', async () => {
+    const def = {
+      entries: [{ meanings: [{ partOfSpeech: 'noun', definitions: [{ definition: 'Sharp tool.', synonyms: [], antonyms: [] }], synonyms: [], antonyms: [] }] }],
+      sourceUrls: [],
+    };
+    const { id } = await dict.saveWord({ text: 'knife', meaning: '', definition: def, translations: [], collectionIds: [] });
+    expect((await db.words.get(id))!.definition).toEqual(def);
+
+    // Edit without passing a definition keeps it.
+    await dict.saveWord({ id, text: 'knife', meaning: 'note', translations: [], collectionIds: [] });
+    expect((await db.words.get(id))!.definition).toEqual(def);
+
+    // Search finds text inside the definition.
+    await settle();
+    dict.query.set('sharp');
+    expect(dict.visibleWords().map((w) => w.text)).toEqual(['knife']);
+
+    // Backup round-trip accepts it.
+    await dict.importBackup(await dict.exportBackup());
+    expect((await db.words.get(id))!.definition).toEqual(def);
+
+    // null removes it.
+    await dict.saveWord({ id, text: 'knife', meaning: 'note', definition: null, translations: [], collectionIds: [] });
+    expect('definition' in (await db.words.get(id))!).toBe(false);
+
+    // Merging an existing word adds a definition when it had none.
+    await dict.saveWord({ text: 'knife', meaning: '', definition: def, translations: [], collectionIds: [] });
+    expect((await db.words.get(id))!.definition).toEqual(def);
+  });
+
   it('matches Arabic regardless of diacritics', async () => {
     await dict.saveWord({ text: 'book', meaning: '', translations: ['كِتَاب'], collectionIds: [] });
     await dict.saveWord({ text: 'books', meaning: '', translations: ['كتاب'], collectionIds: [] });

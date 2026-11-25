@@ -3,7 +3,9 @@ import { FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { DictionaryService } from '../core/dictionary.service';
-import { Word, languageName } from '../core/models';
+import { fetchDefinition } from '../core/dictionary-api';
+import { Word, WordDefinition, languageName } from '../core/models';
+import { DefinitionView } from './definition-view';
 import { NameDialog, NameDialogData } from './name-dialog';
 
 export interface WordDialogData {
@@ -19,7 +21,7 @@ export interface WordDialogResult {
 
 @Component({
   selector: 'app-word-dialog',
-  imports: [FormsModule, MatDialogModule, MatIconModule],
+  imports: [DefinitionView, FormsModule, MatDialogModule, MatIconModule],
   templateUrl: './word-dialog.html',
   styleUrl: './word-dialog.scss',
 })
@@ -34,6 +36,7 @@ export class WordDialog {
 
   protected readonly text = signal(this.data.word?.text ?? this.data.initialText ?? '');
   protected readonly meaning = signal(this.data.word?.meaning ?? '');
+  protected readonly definition = signal<WordDefinition | null>(this.data.word?.definition ?? null);
   protected readonly translations = signal<string[]>(
     this.data.word
       ? (this.dict.translations().get(this.data.word.id!) ?? []).map((t) => t.text)
@@ -50,7 +53,7 @@ export class WordDialog {
   protected readonly busy = signal(false);
   protected readonly lookingUpMeaning = signal(false);
 
-  /** Looks up English definitions without requiring an API key or application backend. */
+  /** Fetches the full English definition (all meanings, examples and origin). */
   protected async lookupMeaning(): Promise<void> {
     const word = this.text().trim();
     if (!word || this.lookingUpMeaning()) return;
@@ -58,35 +61,9 @@ export class WordDialog {
     this.error.set('');
     this.lookingUpMeaning.set(true);
     try {
-      const response = await fetch(
-        `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`,
-      );
-      if (!response.ok) throw new Error('No definition found for this word.');
-
-      const entries = (await response.json()) as Array<{
-        meanings?: Array<{
-          partOfSpeech?: string;
-          definitions?: Array<{ definition?: string }>;
-        }>;
-      }>;
-      const definitions = entries.flatMap((entry) =>
-        (entry.meanings ?? []).flatMap((meaning) =>
-          (meaning.definitions ?? [])
-            .filter((definition) => definition.definition)
-            .slice(0, 2)
-            .map((definition) =>
-              `${meaning.partOfSpeech ? `${meaning.partOfSpeech}: ` : ''}${definition.definition}`,
-            ),
-        ),
-      );
-      if (definitions.length === 0) throw new Error('No definition found for this word.');
-      this.meaning.set(definitions.slice(0, 4).join('\n'));
+      this.definition.set(await fetchDefinition(word));
     } catch (e) {
-      this.error.set(
-        e instanceof Error && e.message !== 'Failed to fetch'
-          ? e.message
-          : 'Could not reach the dictionary. Check your connection and try again.',
-      );
+      this.error.set(e instanceof Error ? e.message : 'Something went wrong');
     } finally {
       this.lookingUpMeaning.set(false);
     }
@@ -155,6 +132,7 @@ export class WordDialog {
         id: this.data.word?.id,
         text: this.text(),
         meaning: this.meaning(),
+        definition: this.definition(),
         translations: this.translations(),
         collectionIds: this.collectionIds(),
       });

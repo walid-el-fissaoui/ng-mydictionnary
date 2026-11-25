@@ -4,9 +4,37 @@ export interface Word {
   text: string;
   /** Normalized text used for matching and uniqueness (per language). */
   textNorm: string;
+  /** Free-form meaning or personal notes typed by the user. */
   meaning: string;
+  /** Structured definition fetched from the dictionary API, if any. */
+  definition?: WordDefinition;
   collectionIds: number[];
   createdAt: number;
+}
+
+export interface DefinitionSense {
+  definition: string;
+  example?: string;
+  synonyms: string[];
+  antonyms: string[];
+}
+
+export interface DefinitionMeaning {
+  partOfSpeech: string;
+  definitions: DefinitionSense[];
+  synonyms: string[];
+  antonyms: string[];
+}
+
+/** One etymological entry (homographs such as "bank" have several). */
+export interface DefinitionEntry {
+  origin?: string;
+  meanings: DefinitionMeaning[];
+}
+
+export interface WordDefinition {
+  entries: DefinitionEntry[];
+  sourceUrls: string[];
 }
 
 /** Undirected translation link between two words. Always stored with a < b. */
